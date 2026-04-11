@@ -32,10 +32,12 @@ const schedule: { title: string; courses: Record<string, Course> } = {
 };
 
 const App = () => (
-  <>
-    <Banner title={schedule.title} />
-    <CourseList courses={schedule.courses} />
-  </>
+  <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl">
+      <Banner title={schedule.title} />
+      <CourseList courses={schedule.courses} />
+    </div>
+  </div>
 );
 
 export default App;
