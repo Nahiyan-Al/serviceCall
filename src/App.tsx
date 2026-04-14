@@ -1,43 +1,52 @@
 import Banner from "./components/Banner";
 import CourseList, { type Course } from "./components/CourseList";
+import { useJsonQuery } from "./utilities/fetch";
 
-const schedule: { title: string; courses: Record<string, Course> } = {
-  title: "CS Courses for 2018-2019",
-  courses: {
-    F101: {
-      term: "Fall",
-      number: "101",
-      meets: "MWF 11:00-11:50",
-      title: "Computer Science: Concepts, Philosophy, and Connections",
-    },
-    F110: {
-      term: "Fall",
-      number: "110",
-      meets: "MWF 10:00-10:50",
-      title: "Intro Programming for non-majors",
-    },
-    S313: {
-      term: "Spring",
-      number: "313",
-      meets: "TuTh 15:30-16:50",
-      title: "Tangible Interaction Design and Learning",
-    },
-    S314: {
-      term: "Spring",
-      number: "314",
-      meets: "TuTh 9:30-10:50",
-      title: "Tech & Human Interaction",
-    },
-  },
+const COURSES_URL =
+  "https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php";
+
+type Schedule = {
+  title: string;
+  courses: Record<string, Course>;
 };
 
-const App = () => (
-  <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
-    <div className="mx-auto max-w-7xl">
-      <Banner title={schedule.title} />
-      <CourseList courses={schedule.courses} />
+function isSchedule(value: unknown): value is Schedule {
+  if (value === null || typeof value !== "object") return false;
+  const o = value as Record<string, unknown>;
+  if (typeof o.title !== "string" || o.courses === null || typeof o.courses !== "object") {
+    return false;
+  }
+  return true;
+}
+
+const App = () => {
+  const [data, loading, error] = useJsonQuery(COURSES_URL);
+
+  const schedule = isSchedule(data) ? data : null;
+
+  return (
+    <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        {loading && <p className="text-gray-600">Loading courses…</p>}
+        {error && (
+          <p className="text-red-600" role="alert">
+            Could not load courses: {error.message}
+          </p>
+        )}
+        {!loading && !error && schedule && (
+          <>
+            <Banner title={schedule.title} />
+            <CourseList courses={schedule.courses} />
+          </>
+        )}
+        {!loading && !error && data !== undefined && !schedule && (
+          <p className="text-red-600" role="alert">
+            Received unexpected data from the course server.
+          </p>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default App;
