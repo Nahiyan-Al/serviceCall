@@ -1,5 +1,5 @@
-import Banner from "./components/Banner";
-import CourseList, { type Course } from "./components/CourseList";
+import TermPage from "./components/TermPage";
+import { type Course } from "./components/CourseList";
 import { useJsonQuery } from "./utilities/fetch";
 
 const COURSES_URL =
@@ -34,10 +34,7 @@ const App = () => {
           </p>
         )}
         {!loading && !error && schedule && (
-          <>
-            <Banner title={schedule.title} />
-            <CourseList courses={schedule.courses} />
-          </>
+          <TermPage title={schedule.title} courses={schedule.courses} />
         )}
         {!loading && !error && data !== undefined && !schedule && (
           <p className="text-red-600" role="alert">
