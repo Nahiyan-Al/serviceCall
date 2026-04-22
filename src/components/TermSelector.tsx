@@ -8,7 +8,7 @@ interface TermSelectorProps {
 }
 
 const TermSelector = ({ selection, setSelection }: TermSelectorProps) => (
-  <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Filter by term">
+  <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by term">
     {TERMS.map((term) => (
       <button
         key={term}

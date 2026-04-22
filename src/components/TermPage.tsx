@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Banner from "./Banner";
 import CourseList, { type Course } from "./CourseList";
+import CoursePlanModal from "./CoursePlanModal";
 import TermSelector, { type Term } from "./TermSelector";
 import { toggleList } from "../utilities/toggleList";
 
@@ -12,6 +13,7 @@ interface TermPageProps {
 const TermPage = ({ title, courses }: TermPageProps) => {
   const [selectedTerm, setSelectedTerm] = useState<Term>("Fall");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [planOpen, setPlanOpen] = useState(false);
 
   const filteredCourses = Object.fromEntries(
     Object.entries(courses).filter(([, course]) => course.term === selectedTerm),
@@ -24,7 +26,22 @@ const TermPage = ({ title, courses }: TermPageProps) => {
   return (
     <>
       <Banner title={title} />
-      <TermSelector selection={selectedTerm} setSelection={setSelectedTerm} />
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <TermSelector selection={selectedTerm} setSelection={setSelectedTerm} />
+        <button
+          type="button"
+          onClick={() => setPlanOpen(true)}
+          className="self-start rounded-lg border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 sm:self-auto"
+        >
+          Course plan
+        </button>
+      </div>
+      <CoursePlanModal
+        isOpen={planOpen}
+        onClose={() => setPlanOpen(false)}
+        selectedIds={selectedIds}
+        courses={courses}
+      />
       <CourseList
         courses={filteredCourses}
         selectedIds={selectedIds}
