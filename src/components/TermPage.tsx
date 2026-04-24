@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Banner from "./Banner";
 import CourseList, { type Course } from "./CourseList";
 import CoursePlanModal from "./CoursePlanModal";
 import TermSelector, { type Term } from "./TermSelector";
+import { conflictsWithSelection } from "../utilities/courseConflicts";
 import { toggleList } from "../utilities/toggleList";
 
 interface TermPageProps {
@@ -19,7 +20,22 @@ const TermPage = ({ title, courses }: TermPageProps) => {
     Object.entries(courses).filter(([, course]) => course.term === selectedTerm),
   );
 
+  const selectedCourses = useMemo(
+    () => selectedIds.map((id) => courses[id]).filter((c): c is Course => c != null),
+    [selectedIds, courses],
+  );
+
   const toggleCourseSelection = (courseId: string) => {
+    const course = courses[courseId];
+    if (!course) return;
+
+    if (selectedIds.includes(courseId)) {
+      setSelectedIds((ids) => toggleList(courseId, ids));
+      return;
+    }
+
+    if (conflictsWithSelection(course, selectedCourses)) return;
+
     setSelectedIds((ids) => toggleList(courseId, ids));
   };
 
@@ -45,6 +61,7 @@ const TermPage = ({ title, courses }: TermPageProps) => {
       <CourseList
         courses={filteredCourses}
         selectedIds={selectedIds}
+        selectedCourses={selectedCourses}
         onToggleCourse={toggleCourseSelection}
       />
     </>
