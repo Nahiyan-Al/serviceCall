@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
+    "@tanstack/react-router": "^1.168.25",
+    "@tanstack/react-router-devtools": "^1.166.13",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.2"
@@ -21,6 +23,7 @@
     "@babel/core": "^7.29.0",
     "@eslint/js": "^9.39.4",
     "@rolldown/plugin-babel": "^0.2.2",
+    "@tanstack/router-plugin": "^1.167.28",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/babel__core": "^7.20.5",

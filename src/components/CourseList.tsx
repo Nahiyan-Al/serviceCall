@@ -1,4 +1,5 @@
 import { conflictsWithSelection } from "../utilities/courseConflicts";
+import { Link } from "@tanstack/react-router";
 
 export interface Course {
   term: string;
@@ -31,20 +32,23 @@ const CourseList = ({ courses, selectedIds, selectedCourses, onToggleCourse }: C
       const blocked = !selected && conflictsWithSelection(course, selectedCourses);
       return (
         <li key={id} className="h-full min-w-0">
-          <button
-            type="button"
-            aria-pressed={selected}
-            disabled={blocked}
-            title={blocked ? "Time conflicts with a selected course" : undefined}
-            onClick={() => onToggleCourse(id)}
-            className={`relative flex h-full w-full flex-col rounded-lg border p-4 text-left shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+          <div
+            className={`relative flex h-full flex-col rounded-lg border p-4 text-left shadow-sm transition-colors ${
               blocked
-                ? "cursor-not-allowed border-gray-200 bg-gray-100 opacity-65"
+                ? "border-gray-200 bg-gray-100 opacity-65"
                 : selected
-                  ? "cursor-pointer border-blue-500 bg-blue-50 ring-2 ring-blue-400"
-                  : "cursor-pointer border-gray-200 bg-white hover:bg-gray-50"
+                  ? "border-blue-500 bg-blue-50 ring-2 ring-blue-400"
+                  : "border-gray-200 bg-white"
             }`}
           >
+            <button
+              type="button"
+              aria-pressed={selected}
+              disabled={blocked}
+              title={blocked ? "Time conflicts with a selected course" : undefined}
+              onClick={() => onToggleCourse(id)}
+              className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            >
             {selected && (
               <span
                 className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white shadow"
@@ -87,7 +91,15 @@ const CourseList = ({ courses, selectedIds, selectedCourses, onToggleCourse }: C
             >
               {course.meets}
             </p>
-          </button>
+            </button>
+            <Link
+              to="/courses/$courseId/edit"
+              params={{ courseId: id }}
+              className="mt-4 inline-flex w-fit rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50"
+            >
+              Edit
+            </Link>
+          </div>
         </li>
       );
     })}
