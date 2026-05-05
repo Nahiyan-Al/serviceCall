@@ -15,6 +15,7 @@ type ParsedMeeting = {
   range: TimeRange;
 };
 
+/** Single-line pattern: day token(s), a space, then H:MM-H:MM */
 const MEETING_LINE = /^(.+?)\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/;
 
 const timeToMinutes = (t: string): number | null => {
@@ -63,6 +64,9 @@ const parseDayTokens = (compact: string): string[] | null => {
   return out;
 };
 
+const tokensHaveDuplicates = (tokens: string[]): boolean =>
+  new Set(tokens).size !== tokens.length;
+
 const parseMeeting = (meets: string): ParsedMeeting | null => {
   const trimmed = meets.trim();
   if (!trimmed) return null;
@@ -77,12 +81,19 @@ const parseMeeting = (meets: string): ParsedMeeting | null => {
   if (startMin >= endMin) return null;
 
   const tokens = parseDayTokens(dayPart);
-  if (!tokens || tokens.length === 0) return null;
+  if (!tokens || tokens.length === 0 || tokensHaveDuplicates(tokens)) return null;
 
   return {
     days: new Set(tokens),
     range: { startMin, endMin },
   };
+};
+
+/** True if trimmed value is empty, or parses as a valid meeting line (same rules as conflicts). */
+export const isValidMeetingTime = (meets: string): boolean => {
+  const trimmed = meets.trim();
+  if (trimmed === "") return true;
+  return parseMeeting(meets) !== null;
 };
 
 const daySetsOverlap = (a: Set<string>, b: Set<string>): boolean => {
@@ -92,12 +103,12 @@ const daySetsOverlap = (a: Set<string>, b: Set<string>): boolean => {
   return false;
 };
 
-/** Half-open ranges [start, end) in minutes — adjacent slots do not overlap. */
-const rangesOverlap = (a: TimeRange, b: TimeRange): boolean =>
+/** Overlap in minute space; touching boundaries (one ends exactly when the other starts) is not overlap. */
+const timeRangesOverlap = (a: TimeRange, b: TimeRange): boolean =>
   a.startMin < b.endMin && b.startMin < a.endMin;
 
-const meetingsConflict = (a: ParsedMeeting, b: ParsedMeeting): boolean =>
-  daySetsOverlap(a.days, b.days) && rangesOverlap(a.range, b.range);
+const parsedMeetingsConflict = (a: ParsedMeeting, b: ParsedMeeting): boolean =>
+  daySetsOverlap(a.days, b.days) && timeRangesOverlap(a.range, b.range);
 
 const timeConflictBetween = (courseA: CourseScheduleFields, courseB: CourseScheduleFields): boolean => {
   if (courseA.term !== courseB.term) return false;
@@ -106,7 +117,7 @@ const timeConflictBetween = (courseA: CourseScheduleFields, courseB: CourseSched
   const pB = parseMeeting(courseB.meets);
   if (!pA || !pB) return false;
 
-  return meetingsConflict(pA, pB);
+  return parsedMeetingsConflict(pA, pB);
 };
 
 /**

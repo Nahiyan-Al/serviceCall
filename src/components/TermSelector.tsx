@@ -1,6 +1,6 @@
-export type Term = "Fall" | "Winter" | "Spring";
+import { COURSE_TERMS } from "../types/courseForm";
 
-const TERMS: Term[] = ["Fall", "Winter", "Spring"];
+export type Term = (typeof COURSE_TERMS)[number];
 
 interface TermSelectorProps {
   selection: Term;
@@ -9,7 +9,7 @@ interface TermSelectorProps {
 
 const TermSelector = ({ selection, setSelection }: TermSelectorProps) => (
   <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by term">
-    {TERMS.map((term) => (
+    {COURSE_TERMS.map((term) => (
       <button
         key={term}
         type="button"

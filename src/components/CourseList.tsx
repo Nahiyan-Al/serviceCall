@@ -47,7 +47,7 @@ const CourseList = ({ courses, selectedIds, selectedCourses, onToggleCourse }: C
               disabled={blocked}
               title={blocked ? "Time conflicts with a selected course" : undefined}
               onClick={() => onToggleCourse(id)}
-              className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className={`flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${blocked ? "cursor-not-allowed" : ""}`}
             >
             {selected && (
               <span
