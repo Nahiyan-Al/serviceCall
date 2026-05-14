@@ -1,9 +1,7 @@
 import TermPage from "./components/TermPage";
 import { type Course } from "./components/CourseList";
-import { useJsonQuery } from "./utilities/fetch";
-
-const COURSES_URL =
-  "https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php";
+import { useDataQuery } from "./utilities/firebase";
+import { SCHEDULE_DATABASE_PATH } from "./utilities/schedule";
 
 type Schedule = {
   title: string;
@@ -20,7 +18,7 @@ function isSchedule(value: unknown): value is Schedule {
 }
 
 const App = () => {
-  const [data, loading, error] = useJsonQuery(COURSES_URL);
+  const [data, loading, error] = useDataQuery(SCHEDULE_DATABASE_PATH);
 
   const schedule = isSchedule(data) ? data : null;
 
@@ -38,7 +36,7 @@ const App = () => {
         )}
         {!loading && !error && data !== undefined && !schedule && (
           <p className="text-red-600" role="alert">
-            Received unexpected data from the course server.
+            Received unexpected data from Firebase.
           </p>
         )}
       </div>

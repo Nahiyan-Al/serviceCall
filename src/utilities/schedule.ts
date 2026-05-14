@@ -1,7 +1,7 @@
 import { type Course } from '../components/CourseList'
 
-export const COURSES_URL =
-  'https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php'
+/** Realtime Database path for schedule JSON (`title` + `courses`). */
+export const SCHEDULE_DATABASE_PATH = 'schedule'
 
 export type Schedule = {
   title: string

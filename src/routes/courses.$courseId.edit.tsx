@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import Banner from '../components/Banner'
 import CourseEditor from '../components/CourseEditor'
-import { useJsonQuery } from '../utilities/fetch'
-import { COURSES_URL, isSchedule } from '../utilities/schedule'
+import { useDataQuery } from '../utilities/firebase'
+import { isSchedule, SCHEDULE_DATABASE_PATH } from '../utilities/schedule'
 
 const CourseEditPage = () => {
   const { courseId } = Route.useParams()
   const navigate = useNavigate()
-  const [data, loading, error] = useJsonQuery(COURSES_URL)
+  const [data, loading, error] = useDataQuery(SCHEDULE_DATABASE_PATH)
   const schedule = isSchedule(data) ? data : null
   const course = schedule?.courses[courseId]
 

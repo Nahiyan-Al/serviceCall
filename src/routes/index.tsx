@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import TermPage from '../components/TermPage'
-import { useJsonQuery } from '../utilities/fetch'
-import { COURSES_URL, isSchedule } from '../utilities/schedule'
+import { useDataQuery } from '../utilities/firebase'
+import { isSchedule, SCHEDULE_DATABASE_PATH } from '../utilities/schedule'
 
 const CourseListPage = () => {
-  const [data, loading, error] = useJsonQuery(COURSES_URL)
+  const [data, loading, error] = useDataQuery(SCHEDULE_DATABASE_PATH)
   const schedule = isSchedule(data) ? data : null
 
   return (
@@ -18,7 +18,7 @@ const CourseListPage = () => {
       {!loading && !error && schedule && <TermPage title={schedule.title} courses={schedule.courses} />}
       {!loading && !error && data !== undefined && !schedule && (
         <p className="text-red-600" role="alert">
-          Received unexpected data from the course server.
+          Received unexpected data from Firebase.
         </p>
       )}
     </>
