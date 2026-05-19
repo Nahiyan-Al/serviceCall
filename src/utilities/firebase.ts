@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getApp, getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app'
-import { getDatabase, onValue, ref, type Database } from 'firebase/database'
+import { getDatabase, onValue, ref, update, type Database } from 'firebase/database'
+import { type Course } from '../components/CourseList'
+import { SCHEDULE_DATABASE_PATH } from './schedule'
 
 function readFirebaseOptions(): FirebaseOptions {
   const {
@@ -67,4 +69,19 @@ export function useDataQuery(path: string): [unknown, boolean, Error | null] {
   }, [path])
 
   return [data, loading, error]
+}
+
+/** Write only the changed course fields at `schedule/courses/{courseId}`. */
+export async function updateCourseFields(
+  courseId: string,
+  updates: Partial<Course>,
+): Promise<void> {
+  const path = `${SCHEDULE_DATABASE_PATH}/courses/${courseId}`
+  console.log('updateCourseFields', path, updates)
+  try {
+    await update(ref(database, path), updates)
+  } catch (err) {
+    console.error('updateCourseFields failed', err)
+    throw err instanceof Error ? err : new Error(String(err))
+  }
 }

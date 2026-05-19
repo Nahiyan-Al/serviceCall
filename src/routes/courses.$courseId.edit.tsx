@@ -30,7 +30,11 @@ const CourseEditPage = () => {
   return (
     <>
       <Banner title={schedule.title} />
-      <CourseEditor course={course} onCancel={() => navigate({ to: '/' })} />
+      <CourseEditor
+        courseId={courseId}
+        course={course}
+        onCancel={() => navigate({ to: '/' })}
+      />
     </>
   )
 }
