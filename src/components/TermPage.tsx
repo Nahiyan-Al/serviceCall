@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import Banner from "./Banner";
 import CourseList, { type Course } from "./CourseList";
 import CoursePlanModal from "./CoursePlanModal";
 import TermSelector, { type Term } from "./TermSelector";
@@ -41,7 +40,7 @@ const TermPage = ({ title, courses }: TermPageProps) => {
 
   return (
     <>
-      <Banner title={title} />
+      <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <TermSelector selection={selectedTerm} setSelection={setSelectedTerm} />
         <button

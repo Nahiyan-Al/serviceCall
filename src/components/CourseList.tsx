@@ -1,4 +1,5 @@
 import { conflictsWithSelection } from "../utilities/courseConflicts";
+import { useAuthState } from "../utilities/firebase";
 import { Link } from "@tanstack/react-router";
 
 export interface Course {
@@ -25,7 +26,10 @@ const CheckIcon = () => (
   </svg>
 );
 
-const CourseList = ({ courses, selectedIds, selectedCourses, onToggleCourse }: CourseListProps) => (
+const CourseList = ({ courses, selectedIds, selectedCourses, onToggleCourse }: CourseListProps) => {
+  const { isAuthenticated, isInitialLoading } = useAuthState()
+
+  return (
   <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 xl:grid-cols-4">
     {Object.entries(courses).map(([id, course]) => {
       const selected = selectedIds.includes(id);
@@ -92,18 +96,21 @@ const CourseList = ({ courses, selectedIds, selectedCourses, onToggleCourse }: C
               {course.meets}
             </p>
             </button>
-            <Link
-              to="/courses/$courseId/edit"
-              params={{ courseId: id }}
-              className="mt-4 inline-flex w-fit rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50"
-            >
-              Edit
-            </Link>
+            {isAuthenticated && !isInitialLoading ? (
+              <Link
+                to="/courses/$courseId/edit"
+                params={{ courseId: id }}
+                className="mt-4 inline-flex w-fit rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50"
+              >
+                Edit
+              </Link>
+            ) : null}
           </div>
         </li>
       );
     })}
   </ul>
-);
+  )
+}
 
 export default CourseList;
