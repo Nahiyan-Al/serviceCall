@@ -1,18 +1,28 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import CourseEditor from '../components/CourseEditor'
-import { useAuthState, useDataQuery } from '../utilities/firebase'
+import { useDataQuery } from '../utilities/firebase'
+import { useProfile } from '../utilities/profile'
 import { isSchedule, SCHEDULE_DATABASE_PATH } from '../utilities/schedule'
 
 const CourseEditPage = () => {
   const { courseId } = Route.useParams()
   const navigate = useNavigate()
-  const { isAuthenticated, isInitialLoading } = useAuthState()
+  const [profile, profileLoading, profileError] = useProfile()
   const [data, loading, error] = useDataQuery(SCHEDULE_DATABASE_PATH)
   const schedule = isSchedule(data) ? data : null
   const course = schedule?.courses[courseId]
 
-  if (isInitialLoading) return <p className="text-gray-600">Checking sign-in…</p>
-  if (!isAuthenticated) {
+  if (profileError) {
+    return (
+      <p className="text-red-600" role="alert">
+        Error loading profile: {profileError.message}
+      </p>
+    )
+  }
+
+  if (profileLoading) return <p className="text-gray-600">Loading user profile…</p>
+
+  if (!profile.user) {
     return (
       <p className="text-red-600" role="alert">
         You must{' '}
@@ -20,6 +30,15 @@ const CourseEditPage = () => {
           sign in
         </Link>{' '}
         to edit courses.
+      </p>
+    )
+  }
+
+  if (!profile.isAdmin) {
+    return (
+      <p className="text-red-600" role="alert">
+        Only administrators can edit courses. Ask an admin to add your user ID under{' '}
+        <code className="rounded bg-red-50 px-1">admins</code> in the database.
       </p>
     )
   }

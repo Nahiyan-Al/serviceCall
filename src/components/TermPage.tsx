@@ -3,6 +3,7 @@ import CourseList, { type Course } from "./CourseList";
 import CoursePlanModal from "./CoursePlanModal";
 import TermSelector, { type Term } from "./TermSelector";
 import { conflictsWithSelection } from "../utilities/courseConflicts";
+import { useProfile } from "../utilities/profile";
 import { toggleList } from "../utilities/toggleList";
 
 interface TermPageProps {
@@ -11,6 +12,7 @@ interface TermPageProps {
 }
 
 const TermPage = ({ title, courses }: TermPageProps) => {
+  const [profile, profileLoading, profileError] = useProfile();
   const [selectedTerm, setSelectedTerm] = useState<Term>("Fall");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [planOpen, setPlanOpen] = useState(false);
@@ -38,6 +40,18 @@ const TermPage = ({ title, courses }: TermPageProps) => {
     setSelectedIds((ids) => toggleList(courseId, ids));
   };
 
+  if (profileError) {
+    return (
+      <p className="text-red-600" role="alert">
+        Error loading profile: {profileError.message}
+      </p>
+    );
+  }
+
+  if (profileLoading) {
+    return <p className="text-gray-600">Loading user profile…</p>;
+  }
+
   return (
     <>
       <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
@@ -62,6 +76,8 @@ const TermPage = ({ title, courses }: TermPageProps) => {
         selectedIds={selectedIds}
         selectedCourses={selectedCourses}
         onToggleCourse={toggleCourseSelection}
+        isAdmin={profile.isAdmin}
+        profileLoading={profileLoading}
       />
     </>
   );
